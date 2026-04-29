@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "fullName": "roger/repoport",
+    "cloneUrl": "https://github.com/roger/repoport.git",
+    "sshUrl": "git@github.com:roger/repoport.git"
+  },
+  {
+    "id": 2,
+    "nameWithOwner": "openclaw/stackforge",
+    "htmlUrl": "https://github.com/openclaw/stackforge"
+  },
+  {
+    "id": 3,
+    "owner": "someone",
+    "name": "unused"
+  }
+]
