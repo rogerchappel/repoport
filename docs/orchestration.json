@@ -1,0 +1,197 @@
+{
+  "version": "0.1",
+  "source": "taskbrief-orchestration",
+  "workspace": "default",
+  "repo": "repoport",
+  "generated_from": "taskbrief + llm-orchestration (openai:gpt-4.1-mini)",
+  "summary": {
+    "total_tasks": 6,
+    "dispatchable_now": [
+      "repoport-implement-local-projects-folder-scanning",
+      "repoport-match-local-repos-to-github-remotes",
+      "repoport-flag-stale-or-broken-repositories"
+    ],
+    "blocked_tasks": [
+      "repoport-display-pr-ci-dirty-and-ahead-behind-state-in-dashboard"
+    ],
+    "final_validation_task_ids": []
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "name": "Implementation core features",
+      "mode": "concurrent",
+      "dispatch": "now",
+      "task_ids": [
+        "repoport-implement-local-projects-folder-scanning",
+        "repoport-match-local-repos-to-github-remotes",
+        "repoport-flag-stale-or-broken-repositories"
+      ]
+    },
+    {
+      "wave": 2,
+      "name": "High-risk UI feature",
+      "mode": "sequential",
+      "dispatch": "after_human_decision",
+      "task_ids": [
+        "repoport-display-pr-ci-dirty-and-ahead-behind-state-in-dashboard"
+      ]
+    },
+    {
+      "wave": 3,
+      "name": "Verification / tests",
+      "mode": "sequential",
+      "dispatch": "after_dependencies",
+      "task_ids": [
+        "repoport-add-unit-and-fixture-tests-for-core-parsing-and-generation-behavior"
+      ]
+    },
+    {
+      "wave": 4,
+      "name": "Documentation / examples",
+      "mode": "sequential",
+      "dispatch": "after_dependencies",
+      "task_ids": [
+        "repoport-write-readme-with-install-quickstart-and-safety-notes"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "repoport-implement-local-projects-folder-scanning",
+      "title": "Implement local projects folder scanning",
+      "repo": "repoport",
+      "branch": "agent/implement-local-projects-folder-scanning",
+      "type": "feature",
+      "risk": "medium",
+      "phase": "implementation",
+      "depends_on": [],
+      "can_run_concurrently_with": [
+        "repoport-match-local-repos-to-github-remotes",
+        "repoport-flag-stale-or-broken-repositories"
+      ],
+      "dispatchable": true,
+      "blocked_by": [],
+      "verification": [
+        "Unit tests for folder scanning logic",
+        "Fixture tests with sample local folder structures"
+      ]
+    },
+    {
+      "id": "repoport-match-local-repos-to-github-remotes",
+      "title": "Match local repos to GitHub remotes",
+      "repo": "repoport",
+      "branch": "agent/match-local-repos-to-github-remotes",
+      "type": "feature",
+      "risk": "medium",
+      "phase": "implementation",
+      "depends_on": [],
+      "can_run_concurrently_with": [
+        "repoport-implement-local-projects-folder-scanning",
+        "repoport-flag-stale-or-broken-repositories"
+      ],
+      "dispatchable": true,
+      "blocked_by": [],
+      "verification": [
+        "Unit tests for remote matching logic",
+        "Fixture tests with mock GitHub remotes"
+      ]
+    },
+    {
+      "id": "repoport-flag-stale-or-broken-repositories",
+      "title": "Flag stale or broken repositories",
+      "repo": "repoport",
+      "branch": "agent/flag-stale-or-broken-repositories",
+      "type": "feature",
+      "risk": "medium",
+      "phase": "implementation",
+      "depends_on": [],
+      "can_run_concurrently_with": [
+        "repoport-implement-local-projects-folder-scanning",
+        "repoport-match-local-repos-to-github-remotes"
+      ],
+      "dispatchable": true,
+      "blocked_by": [],
+      "verification": [
+        "Unit tests for stale/broken detection logic",
+        "Manual verification of flagged repos"
+      ]
+    },
+    {
+      "id": "repoport-display-pr-ci-dirty-and-ahead-behind-state-in-dashboard",
+      "title": "Display PR, CI, dirty, and ahead-behind state in dashboard",
+      "repo": "repoport",
+      "branch": "agent/display-pr-ci-dirty-and-ahead-behind-state-in-dashboard",
+      "type": "feature",
+      "risk": "high",
+      "phase": "implementation",
+      "depends_on": [
+        "repoport-implement-local-projects-folder-scanning",
+        "repoport-match-local-repos-to-github-remotes",
+        "repoport-flag-stale-or-broken-repositories"
+      ],
+      "can_run_concurrently_with": [],
+      "dispatchable": false,
+      "blocked_by": [
+        "approve high-risk scope before dispatch"
+      ],
+      "verification": [
+        "Unit tests for status parsing and display logic",
+        "Manual verification of UI status indicators"
+      ]
+    },
+    {
+      "id": "repoport-add-unit-and-fixture-tests-for-core-parsing-and-generation-behavior",
+      "title": "Add unit and fixture tests for core parsing and generation behavior",
+      "repo": "repoport",
+      "branch": "agent/add-unit-and-fixture-tests-for-core-parsing-and-generation-behavior",
+      "type": "test",
+      "risk": "low",
+      "phase": "verification",
+      "depends_on": [
+        "repoport-implement-local-projects-folder-scanning",
+        "repoport-match-local-repos-to-github-remotes",
+        "repoport-flag-stale-or-broken-repositories",
+        "repoport-display-pr-ci-dirty-and-ahead-behind-state-in-dashboard"
+      ],
+      "can_run_concurrently_with": [],
+      "dispatchable": false,
+      "blocked_by": [],
+      "verification": [
+        "All core parsing and generation functions have tests",
+        "Tests pass consistently"
+      ]
+    },
+    {
+      "id": "repoport-write-readme-with-install-quickstart-and-safety-notes",
+      "title": "Write README with install, quickstart, and safety notes",
+      "repo": "repoport",
+      "branch": "agent/write-readme-with-install-quickstart-and-safety-notes",
+      "type": "documentation",
+      "risk": "low",
+      "phase": "documentation",
+      "depends_on": [
+        "repoport-implement-local-projects-folder-scanning",
+        "repoport-match-local-repos-to-github-remotes",
+        "repoport-flag-stale-or-broken-repositories",
+        "repoport-display-pr-ci-dirty-and-ahead-behind-state-in-dashboard",
+        "repoport-add-unit-and-fixture-tests-for-core-parsing-and-generation-behavior"
+      ],
+      "can_run_concurrently_with": [],
+      "dispatchable": false,
+      "blocked_by": [],
+      "verification": [
+        "README includes install instructions",
+        "README includes quickstart guide",
+        "README documents safety and local-first behavior"
+      ]
+    }
+  ],
+  "dispatch_prompt": "Dispatch Wave 1 first. These tasks may run concurrently:\n- repoport-implement-local-projects-folder-scanning\n- repoport-match-local-repos-to-github-remotes\n- repoport-flag-stale-or-broken-repositories\nWait for the whole wave to finish and pass verification before dispatching the next sequential wave.",
+  "refinement_notes": [
+    "The three medium-risk implementation tasks can run concurrently as they have no dependencies among them and can safely execute in parallel.",
+    "The high-risk UI feature task is separated into its own wave to allow for human approval before dispatch and to avoid blocking other implementation tasks.",
+    "The verification tests depend on all implementation tasks including the high-risk UI feature, so they run sequentially after all implementation tasks complete.",
+    "Documentation depends on all implementation and verification tasks to ensure completeness and accuracy, so it is scheduled last."
+  ]
+}
