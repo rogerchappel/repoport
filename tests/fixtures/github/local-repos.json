@@ -1,0 +1,33 @@
+[
+  {
+    "path": "/Users/roger/Developer/my-opensource/repoport",
+    "remotes": [
+      {
+        "name": "origin",
+        "url": "git@github.com:roger/repoport.git"
+      },
+      {
+        "name": "mirror",
+        "url": "git@example.com:roger/repoport.git"
+      }
+    ]
+  },
+  {
+    "path": "/Users/roger/Developer/my-opensource/stackforge",
+    "remotes": [
+      {
+        "name": "upstream",
+        "url": "https://github.com/openclaw/stackforge.git"
+      }
+    ]
+  },
+  {
+    "path": "/Users/roger/Developer/private/internal-tool",
+    "remotes": [
+      {
+        "name": "origin",
+        "url": "git@gitlab.com:roger/internal-tool.git"
+      }
+    ]
+  }
+]
