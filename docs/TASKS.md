@@ -24,33 +24,32 @@ Medium
 
 Source: llm (openai:gpt-4.1-mini)
 
-V1 scope requires scanning local projects folder to identify repos for status tracking
+V1 scope requires scanning local projects folder to identify repos for status display
 
 ## Allowed Paths
 
-- src/scanner
-- src/utils
-- src/main
+- src/scanner/
+- src/utils/
 
 ## Forbidden Paths
 
-- src/network
-- src/enterprise_analytics
+- src/ui/
+- src/network/
 
 ## Expected Commits
 
 - feat: add local projects folder scanning module
-- test: add tests for folder scanning
+- test: add tests for local folder scanning
 
 ## Verification
 
 - Unit tests for folder scanning logic
-- Fixture tests simulating various folder structures
+- Fixture tests with sample local folder structures
 
 ## Stop Conditions
 
 - Local projects folder scanning reliably detects repos
-- No crashes or hangs during scanning
+- Tests pass without errors
 
 ## Review Pack Required
 
@@ -62,7 +61,7 @@ Yes.
 
 ## Agent Prompt
 
-Implement scanning of the local projects folder to detect repositories for repoport.
+Implement a module to scan the local projects folder and identify git repositories for further processing.
 
 ---
 
@@ -96,14 +95,13 @@ V1 scope requires matching local repos to GitHub remotes to fetch PR and CI stat
 
 ## Allowed Paths
 
-- src/scanner
-- src/github_integration
-- src/utils
+- src/scanner/
+- src/github/
 
 ## Forbidden Paths
 
-- src/enterprise_analytics
-- src/auto_merge
+- src/ui/
+- src/network/
 
 ## Expected Commits
 
@@ -113,12 +111,12 @@ V1 scope requires matching local repos to GitHub remotes to fetch PR and CI stat
 ## Verification
 
 - Unit tests for remote matching logic
-- Fixture tests with various remote URL formats
+- Fixture tests with mock GitHub remotes
 
 ## Stop Conditions
 
 - Local repos correctly matched to GitHub remotes
-- No false positives or mismatches
+- Tests pass without errors
 
 ## Review Pack Required
 
@@ -130,7 +128,7 @@ Yes.
 
 ## Agent Prompt
 
-Implement logic to match local repositories to their GitHub remotes for repoport.
+Develop functionality to match local git repositories to their GitHub remote URLs for status retrieval.
 
 ---
 
@@ -138,7 +136,7 @@ Implement logic to match local repositories to their GitHub remotes for repoport
 
 ## Objective
 
-Show pull request status, continuous integration status, local dirty state, and ahead-behind commit counts in the dashboard
+Show pull request, continuous integration, local dirty state, and ahead-behind commit status in the app dashboard
 
 ## Repository
 
@@ -164,14 +162,13 @@ Core feature to provide repo health and status visibility in the macOS menu bar 
 
 ## Allowed Paths
 
-- src/ui
-- src/github_integration
-- src/scanner
+- src/ui/
+- src/github/
+- src/scanner/
 
 ## Forbidden Paths
 
-- src/enterprise_analytics
-- src/auto_merge
+- src/network/
 
 ## Expected Commits
 
@@ -180,13 +177,13 @@ Core feature to provide repo health and status visibility in the macOS menu bar 
 
 ## Verification
 
-- Unit tests for status fetching and display logic
-- Manual verification of UI updates with test repos
+- Unit tests for status parsing and display logic
+- Manual verification of UI status indicators
 
 ## Stop Conditions
 
 - Dashboard correctly displays PR, CI, dirty, and ahead-behind states
-- No incorrect or stale data shown
+- Tests and manual checks confirm accuracy
 
 ## Review Pack Required
 
@@ -198,7 +195,7 @@ Yes.
 
 ## Agent Prompt
 
-Implement dashboard display of PR, CI, local dirty, and ahead-behind commit states.
+Implement UI components and backend logic to display PR, CI, local dirty, and ahead-behind commit states in the dashboard.
 
 ---
 
@@ -232,29 +229,28 @@ V1 scope includes flagging stale or broken repos to alert maintainers
 
 ## Allowed Paths
 
-- src/ui
-- src/scanner
-- src/utils
+- src/ui/
+- src/scanner/
+- src/github/
 
 ## Forbidden Paths
 
-- src/enterprise_analytics
-- src/auto_merge
+- src/network/
 
 ## Expected Commits
 
 - feat: add stale and broken repo detection and flagging
-- test: add tests for stale/broken repo detection
+- test: add tests for stale/broken repo logic
 
 ## Verification
 
 - Unit tests for stale/broken detection logic
-- Manual testing with known stale/broken repos
+- Manual verification of flagged repos
 
 ## Stop Conditions
 
 - Stale and broken repos are correctly flagged in the UI
-- No false positives or missed flags
+- Tests and manual checks confirm detection accuracy
 
 ## Review Pack Required
 
@@ -266,15 +262,15 @@ Yes.
 
 ## Agent Prompt
 
-Implement detection and flagging of stale or broken repositories in repoport.
+Create detection logic and UI indicators to flag stale or broken repositories in the dashboard.
 
 ---
 
-# Task Brief: Document local-first behavior and usage in README
+# Task Brief: Write README with install, quickstart, and safety notes
 
 ## Objective
 
-Provide clear documentation on local-first behavior, installation, quickstart, and safety notes
+Provide clear documentation for installation, quickstart usage, and safety considerations
 
 ## Repository
 
@@ -282,7 +278,7 @@ repoport
 
 ## Suggested Branch
 
-agent/document-local-first-behavior-and-usage-in-readme
+agent/write-readme-with-install-quickstart-and-safety-notes
 
 ## Task Type
 
@@ -296,12 +292,11 @@ Low
 
 Source: llm (openai:gpt-4.1-mini)
 
-Verification requires README to cover install, quickstart, local-first behavior, and no hidden network or credential usage
+Verification requires README to document local-first behavior and no hidden network or credential usage
 
 ## Allowed Paths
 
 - README.md
-- docs/
 
 ## Forbidden Paths
 
@@ -309,19 +304,18 @@ Verification requires README to cover install, quickstart, local-first behavior,
 
 ## Expected Commits
 
-- docs: add install and quickstart instructions
-- docs: document local-first behavior and safety notes
+- docs: add README with install, quickstart, and safety notes
 
 ## Verification
 
 - README includes install instructions
-- README explains local-first behavior
-- README states no hidden network or credential usage
+- README includes quickstart guide
+- README documents safety and local-first behavior
 
 ## Stop Conditions
 
-- README updated with required documentation
-- Documentation reviewed and approved
+- README is complete and reviewed
+- Documentation covers all required topics
 
 ## Review Pack Required
 
@@ -333,4 +327,70 @@ No.
 
 ## Agent Prompt
 
-Write README documentation covering installation, quickstart, local-first behavior, and safety notes.
+Write comprehensive README documentation covering installation, quickstart, and safety notes for repoport.
+
+---
+
+# Task Brief: Add unit and fixture tests for core parsing and generation behavior
+
+## Objective
+
+Ensure core parsing and generation logic is covered by unit and fixture tests
+
+## Repository
+
+repoport
+
+## Suggested Branch
+
+agent/add-unit-and-fixture-tests-for-core-parsing-and-generation-behavior
+
+## Task Type
+
+test
+
+## Risk Level
+
+Low
+
+## Context
+
+Source: llm (openai:gpt-4.1-mini)
+
+Verification requires tests for core functionality to maintain quality and reliability
+
+## Allowed Paths
+
+- tests/
+- src/scanner/
+- src/github/
+
+## Forbidden Paths
+
+- src/ui/
+
+## Expected Commits
+
+- test: add unit and fixture tests for core parsing and generation
+
+## Verification
+
+- All core parsing and generation functions have tests
+- Tests pass consistently
+
+## Stop Conditions
+
+- Test coverage meets project standards
+- No test failures
+
+## Review Pack Required
+
+Yes.
+
+## Human Decision Needed
+
+- None
+
+## Agent Prompt
+
+Develop unit and fixture tests to cover core parsing and generation behavior in repoport.
