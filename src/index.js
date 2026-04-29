@@ -9,3 +9,14 @@ export {
   matchLocalRepoToGitHubRemote,
   matchLocalReposToGitHubRemotes,
 } from './github/match-local-repos.js';
+
+export {
+  parsePullRequestStatus,
+  parseCiStatus,
+  parseWorkingTreeStatus,
+  parseAheadBehindStatus,
+  buildRepositoryDashboardStatus,
+  buildDashboardStatusesFromMatches,
+  formatRepositoryDashboardRow,
+  renderRepositoryDashboard,
+} from './ui/dashboard-status.js';
