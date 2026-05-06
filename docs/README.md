@@ -1,13 +1,15 @@
 # repoport Documentation
 
-This directory holds project documentation.
+Core project docs live here:
 
-## Contents
+- [PRD](./PRD.md)
+- [TASKS](./TASKS.md)
+- [ORCHESTRATION](./ORCHESTRATION.md)
+- [orchestration.json](./orchestration.json)
 
-- [Contributing guide](../CONTRIBUTING.md)
-- [Security policy](../SECURITY.md)
-- [Agent instructions](../AGENTS.md)
+Project-wide contributor docs live at the repo root:
 
-## Additional docs
-
-For a hosted documentation site, see the `docs-site/` directory if present.
+- [README](../README.md)
+- [CONTRIBUTING](../CONTRIBUTING.md)
+- [SECURITY](../SECURITY.md)
+- [CODE_OF_CONDUCT](../CODE_OF_CONDUCT.md)
