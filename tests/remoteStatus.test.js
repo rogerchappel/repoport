@@ -54,6 +54,32 @@ describe('parseGitHubRemote', () => {
     assert.strictEqual(result.repoOwner, 'my-org');
     assert.strictEqual(result.repoName, 'my-repo');
   });
+
+  test('parses ssh:// GitHub remotes', () => {
+    const result = parseGitHubRemote('ssh://git@github.com/owner/repo.git');
+    assert.strictEqual(result.hasGitHubRemote, true);
+    assert.strictEqual(result.repoOwner, 'owner');
+    assert.strictEqual(result.repoName, 'repo');
+  });
+
+  test('parses package-style git+https GitHub remotes', () => {
+    const result = parseGitHubRemote('git+https://github.com/owner/repo.git');
+    assert.strictEqual(result.hasGitHubRemote, true);
+    assert.strictEqual(result.repoOwner, 'owner');
+    assert.strictEqual(result.repoName, 'repo');
+  });
+
+  test('rejects GitHub URLs with extra path segments', () => {
+    const result = parseGitHubRemote('https://github.com/owner/repo/pulls');
+    assert.strictEqual(result.hasGitHubRemote, false);
+    assert.strictEqual(result.remoteUrl, 'https://github.com/owner/repo/pulls');
+  });
+
+  test('rejects malformed scp-style GitHub remotes', () => {
+    const result = parseGitHubRemote('git@github.com:owner/repo/extra.git');
+    assert.strictEqual(result.hasGitHubRemote, false);
+    assert.strictEqual(result.remoteUrl, 'git@github.com:owner/repo/extra.git');
+  });
 });
 
 describe('isValidGitHubRemoteUrl', () => {
