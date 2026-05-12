@@ -5,6 +5,62 @@
  * Broken status is determined by local git metadata only.
  */
 
+const GITHUB_HOST = 'github.com';
+const OWNER_PATTERN = /^[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i;
+const REPO_PATTERN = /^[a-z\d._-]+$/i;
+
+function emptyResult(remoteUrl = null) {
+  return { hasGitHubRemote: false, remoteUrl, repoOwner: null, repoName: null };
+}
+
+function cleanRepoName(value) {
+  return String(value || '').replace(/\.git$/i, '').replace(/\/+$/g, '');
+}
+
+function normalizePathParts(pathname) {
+  return pathname
+    .split('/')
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function isValidOwnerAndRepo(owner, repo) {
+  return OWNER_PATTERN.test(owner) && REPO_PATTERN.test(repo) && repo !== '.' && repo !== '..';
+}
+
+function parseUrlStyleRemote(trimmed) {
+  const candidate = trimmed.replace(/^git\+/, '');
+  let parsed;
+
+  try {
+    parsed = new URL(candidate);
+  } catch {
+    return null;
+  }
+
+  if (parsed.hostname.toLowerCase() !== GITHUB_HOST) return null;
+
+  const parts = normalizePathParts(parsed.pathname);
+  if (parts.length !== 2) return null;
+
+  const [owner, rawRepo] = parts;
+  const repo = cleanRepoName(rawRepo);
+  if (!isValidOwnerAndRepo(owner, repo)) return null;
+
+  return { owner, repo };
+}
+
+function parseScpStyleRemote(trimmed) {
+  const match = trimmed.match(/^(?:[^@\s]+@)?github\.com:([^\s/]+)\/([^\s/]+?)\/?$/i);
+  if (!match) return null;
+
+  const owner = match[1];
+  const repo = cleanRepoName(match[2]);
+  if (!isValidOwnerAndRepo(owner, repo)) return null;
+
+  return { owner, repo };
+}
+
 /**
  * Check if a local repo has a valid GitHub remote configured.
  * @param {string} gitRemoteUrl - The output of `git remote get-url origin` or similar
@@ -12,22 +68,19 @@
  */
 export function parseGitHubRemote(gitRemoteUrl) {
   if (!gitRemoteUrl || typeof gitRemoteUrl !== 'string' || gitRemoteUrl.trim() === '') {
-    return { hasGitHubRemote: false, remoteUrl: null, repoOwner: null, repoName: null };
+    return emptyResult();
   }
 
   const trimmed = gitRemoteUrl.trim();
-  const githubPattern = /github\.com[:/](.+?)\/(.+?)(?:\.git)?$/i;
-  const match = trimmed.match(githubPattern);
+  const parsed = parseUrlStyleRemote(trimmed) ?? parseScpStyleRemote(trimmed);
 
-  if (!match) {
-    return { hasGitHubRemote: false, remoteUrl: trimmed, repoOwner: null, repoName: null };
-  }
+  if (!parsed) return emptyResult(trimmed);
 
   return {
     hasGitHubRemote: true,
     remoteUrl: trimmed,
-    repoOwner: match[1],
-    repoName: match[2].replace(/\.git$/, ''),
+    repoOwner: parsed.owner,
+    repoName: parsed.repo,
   };
 }
 
