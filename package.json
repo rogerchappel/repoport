@@ -12,13 +12,16 @@
   },
   "files": [
     "src",
+    "LICENSE",
     "README.md"
   ],
   "scripts": {
     "test": "node --test",
     "check": "node --test",
     "build": "node --eval \"import('./src/index.js')\"",
-    "smoke": "node ./src/bin/repoport.js --help"
+    "smoke": "node ./src/bin/repoport.js --help",
+    "package:smoke": "bash scripts/package-smoke.sh",
+    "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke"
   },
   "keywords": [
     "git",
