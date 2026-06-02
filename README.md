@@ -1,84 +1,55 @@
-# repoport 🔭
+# repoport
 
-`repoport` is a local-first repo fleet dashboard for people with too many repositories and not enough browser tabs.
+repoport is an early-stage local-first developer tool.
 
-It scans a projects folder, reads local git metadata, matches GitHub remotes, and prints a compact status board showing dirty state, ahead/behind drift, and stale/broken warnings.
+## Status
 
-## What it does today
+This repository is early-stage. The README now reflects the current project intent from `docs/PRD.md`, but behavior should still be treated as pre-1.0 until implementation, examples, and release checks mature.
 
-- scans a local folder for git repos and worktrees
-- reads remotes, dirty state, ahead/behind, and last commit date
-- matches GitHub-style remotes without calling the network
-- flags stale or broken repos from local evidence only
-- renders a text dashboard or JSON for other tools
-
-## Local-first by design
-
-repoport's MVP does **not** call GitHub APIs, publish data, or use stored credentials.
-It only inspects local repository metadata already on disk.
-
-That means:
-
-- no hidden network traffic
-- no background syncing
-- no destructive repo actions
-- predictable, fixture-testable behaviour
-
-## Install
+## Install from a checkout
 
 ```sh
+git clone https://github.com/rogerchappel/repoport.git
+cd repoport
 npm install
 ```
 
-## Quickstart
+## Use
+
+Start by reading the product notes and running the local checks:
 
 ```sh
-node src/bin/repoport.js --root ~/Developer
+sed -n '1,120p' docs/PRD.md
+npm test
 ```
 
-JSON output:
+If you are evaluating the package contents before a release, run:
 
 ```sh
-node src/bin/repoport.js --root ~/Developer --json
+npm run release:check
 ```
 
-Include nested repos:
-
-```sh
-node src/bin/repoport.js --root ~/Developer --include-nested --max-depth 3
-```
-
-## Example output
-
-```text
-octo/alpha [No PRs] [CI unknown] [Clean] [Up to date]
-octo/beta [No PRs] [CI unknown] [Dirty] [Up to date]
-```
-
-## Development
+## Verification
 
 ```sh
 npm test
-npm run check
-npm run build
-npm run smoke
 npm run package:smoke
 npm run release:check
-bash scripts/validate.sh
 ```
 
-## Docs
+## Limitations
 
-- [PRD](docs/PRD.md)
-- [Tasks](docs/TASKS.md)
-- [Orchestration](docs/ORCHESTRATION.md)
-- [Orchestration JSON](docs/orchestration.json)
-- [Contributing](CONTRIBUTING.md)
-- [Security](SECURITY.md)
+- The package is still a v0.1.0 project and may not expose a finished CLI or public API yet.
+- Treat the PRD as direction, not a guarantee that every listed capability is implemented.
+- Do not use the package for production security, compliance, or release decisions until tests and examples cover that workflow.
 
-## Safety notes
+## Contributing
 
-repoport is a visibility tool, not an automation bot. It should help you notice repo problems early, not silently mutate your repos.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Keep changes small, update the PRD or README when scope changes, and include the exact verification command in every pull request.
+
+## Security
+
+See [SECURITY.md](SECURITY.md). Do not include secrets, private tokens, proprietary dependency data, or sensitive logs in public issues or examples.
 
 ## License
 
