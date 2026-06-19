@@ -1,55 +1,55 @@
 # repoport
 
-repoport is an early-stage local-first developer tool.
+Local-first helpers for checking repository freshness and GitHub remote health.
 
 ## Status
 
-This repository is early-stage. The README now reflects the current project intent from `docs/PRD.md`, but behavior should still be treated as pre-1.0 until implementation, examples, and release checks mature.
+This is an early JavaScript module. The current implementation exposes pure local health checks for stale repositories, broken git metadata, and GitHub remote URL parsing. It does not call the GitHub API.
 
-## Install from a checkout
+## Install
 
 ```sh
-git clone https://github.com/rogerchappel/repoport.git
-cd repoport
 npm install
 ```
 
 ## Use
 
-Start by reading the product notes and running the local checks:
+Import the health helpers from the package source while the package is still pre-release:
 
-```sh
-sed -n '1,120p' docs/PRD.md
-npm test
+```js
+import { checkRepoHealth } from "./src/scanner/staleDetector.js";
+
+const health = checkRepoHealth({
+  lastCommitDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
+  hasGit: true,
+  remoteUrl: "git@github.com:owner/repo.git",
+  isValidGitRepo: true
+});
+
+console.log(health);
 ```
 
-If you are evaluating the package contents before a release, run:
+Use `parseGitHubRemote` from `src/github/remoteStatus.js` when you need to normalize HTTPS or SSH GitHub remotes.
 
-```sh
-npm run release:check
-```
-
-## Verification
+## Verify
 
 ```sh
 npm test
-npm run package:smoke
-npm run release:check
 ```
 
 ## Limitations
 
-- The package is still a v0.1.0 project and may not expose a finished CLI or public API yet.
-- Treat the PRD as direction, not a guarantee that every listed capability is implemented.
-- Do not use the package for production security, compliance, or release decisions until tests and examples cover that workflow.
+- Freshness is based on local metadata supplied by the caller.
+- Broken-remote checks validate URL shape only; they do not confirm repository existence or permissions.
+- There is no CLI yet.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Keep changes small, update the PRD or README when scope changes, and include the exact verification command in every pull request.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution expectations. Changes should be small, reviewable, and verified before review.
 
 ## Security
 
-See [SECURITY.md](SECURITY.md). Do not include secrets, private tokens, proprietary dependency data, or sensitive logs in public issues or examples.
+See [SECURITY.md](SECURITY.md) for vulnerability reporting guidance.
 
 ## License
 
