@@ -35,7 +35,13 @@ Use `parseGitHubRemote` from `src/github/remoteStatus.js` when you need to norma
 
 ```sh
 npm test
+npm run release:readiness
+npm run release:check
 ```
+
+`release:readiness` checks repository metadata, packed file declarations,
+package smoke coverage, and workflow placeholder cleanup before the broader
+release check runs.
 
 ## Limitations
 
