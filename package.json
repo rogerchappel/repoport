@@ -24,7 +24,8 @@
     "build": "node --eval \"import('./src/index.js')\"",
     "smoke": "node ./src/bin/repoport.js --help",
     "package:smoke": "bash scripts/package-smoke.sh",
-    "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke"
+    "release:check": "npm test && npm run check && npm run build && npm run smoke && npm run package:smoke",
+    "release:readiness": "node scripts/validate-release-readiness.mjs"
   },
   "keywords": [
     "git",
