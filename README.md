@@ -31,10 +31,24 @@ console.log(health);
 
 Use `parseGitHubRemote` from `src/github/remoteStatus.js` when you need to normalize HTTPS or SSH GitHub remotes.
 
+## CLI
+
+Render a local repository dashboard from a projects directory:
+
+```sh
+npm run smoke
+node src/bin/repoport.js --root /path/to/projects
+node src/bin/repoport.js --root /path/to/projects --json
+```
+
+The CLI is local-first. It reads git metadata from checkouts under `--root`,
+matches GitHub remotes from local URLs, and does not call the GitHub API.
+
 ## Verify
 
 ```sh
 npm test
+npm run smoke
 npm run release:readiness
 npm run release:check
 ```
@@ -47,7 +61,7 @@ release check runs.
 
 - Freshness is based on local metadata supplied by the caller.
 - Broken-remote checks validate URL shape only; they do not confirm repository existence or permissions.
-- There is no CLI yet.
+- The CLI reports local repository state only; remote PR and CI status are placeholders until network-backed providers are added.
 
 ## Contributing
 
