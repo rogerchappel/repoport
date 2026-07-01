@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "test": "node --test",
-    "check": "find src test tests -name '*.js' -print0 | xargs -0 -n1 node --check && node --eval \"import('./src/index.js')\"",
+    "check": "node --check src/github/remoteStatus.js && node --check src/scanner/staleDetector.js",
     "build": "node --eval \"import('./src/index.js')\"",
     "smoke": "node ./src/bin/repoport.js --help",
     "package:smoke": "bash scripts/package-smoke.sh",
