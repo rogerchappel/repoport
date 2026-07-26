@@ -43,6 +43,28 @@ test('parseArgs understands root/json/depth/nested options', () => {
   });
 });
 
+test('parseArgs rejects non-canonical max depths', () => {
+  for (const value of ['2oops', '2.5', '-1', '', ' 2']) {
+    assert.throws(
+      () => parseArgs([`--max-depth=${value}`]),
+      { message: `Invalid --max-depth value: ${value}. Expected a non-negative integer.` },
+    );
+  }
+});
+
+test('CLI reports invalid max depths with a nonzero exit', async () => {
+  await assert.rejects(
+    execFileAsync('node', ['src/bin/repoport.js', '--root', '.', '--max-depth=2oops'], {
+      cwd: path.resolve(import.meta.dirname, '..'),
+    }),
+    (error) => {
+      assert.equal(error.code, 1);
+      assert.match(error.stderr, /Invalid --max-depth value: 2oops.*non-negative integer/);
+      return true;
+    },
+  );
+});
+
 test('buildHelpText documents local-first behavior', () => {
   const help = buildHelpText();
   assert.match(help, /local-first/);

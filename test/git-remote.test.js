@@ -46,3 +46,9 @@ test('parseGitHubRemote rejects non-GitHub remotes', () => {
   assert.equal(parseGitHubRemote('git@gitlab.com:octo/repo.git'), null);
   assert.equal(parseGitHubRemote('not a remote'), null);
 });
+
+test('parseGitRemoteUrl rejects URLs with extra path segments', () => {
+  assert.equal(parseGitRemoteUrl('https://github.com/octo/repo/issues'), null);
+  assert.equal(parseGitRemoteUrl('git@github.com:octo/repo/extra.git'), null);
+  assert.equal(parseGitRemoteUrl('ssh://git@github.com/octo/repo/pulls'), null);
+});
