@@ -11,7 +11,7 @@ function cleanPathname(pathname = '') {
 function splitOwnerAndName(pathname) {
   const parts = cleanPathname(pathname).split('/').filter(Boolean);
 
-  if (parts.length < 2) {
+  if (parts.length !== 2) {
     return null;
   }
 

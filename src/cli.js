@@ -143,7 +143,7 @@ export function buildHelpText() {
     'Options:',
     '  --root <path>        Scan this folder for git repositories',
     '  --json               Emit structured JSON instead of text rows',
-    '  --max-depth <n>      Limit scan depth below the root folder',
+    '  --max-depth <n>      Limit scan depth (a non-negative integer)',
     '  --include-nested     Continue scanning inside discovered repositories',
     '  --ignore <a,b,c>     Extra directory basenames to skip',
     '  -h, --help           Show this help',
@@ -159,11 +159,10 @@ function parseDepth(value) {
   if (value === undefined) {
     throw new Error('--max-depth requires a value');
   }
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed) || parsed < 0) {
-    throw new Error(`Invalid --max-depth value: ${value}`);
+  if (!/^(0|[1-9]\d*)$/.test(value)) {
+    throw new Error(`Invalid --max-depth value: ${value}. Expected a non-negative integer.`);
   }
-  return parsed;
+  return Number(value);
 }
 
 function parseIgnore(value) {
