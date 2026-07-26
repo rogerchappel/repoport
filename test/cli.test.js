@@ -69,6 +69,7 @@ test('buildHelpText documents local-first behavior', () => {
   const help = buildHelpText();
   assert.match(help, /local-first/);
   assert.match(help, /No network calls/);
+  assert.match(help, /--max-depth <n>.*non-negative integer/);
 });
 
 test('CLI renders dashboard rows for fixture repos', async () => {

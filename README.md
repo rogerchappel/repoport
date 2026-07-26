@@ -39,10 +39,15 @@ Render a local repository dashboard from a projects directory:
 npm run smoke
 node src/bin/repoport.js --root /path/to/projects
 node src/bin/repoport.js --root /path/to/projects --json
+node src/bin/repoport.js --root /path/to/projects --max-depth 2
 ```
 
 The CLI is local-first. It reads git metadata from checkouts under `--root`,
 matches GitHub remotes from local URLs, and does not call the GitHub API.
+`--max-depth` accepts only non-negative integers such as `0`, `1`, or `2`.
+GitHub remotes must be clone-style HTTPS or SSH URLs with exactly an
+`owner/repository` path; browser page URLs such as `/owner/repository/issues`
+are not treated as repository remotes.
 
 ## Verify
 

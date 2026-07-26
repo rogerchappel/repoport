@@ -143,7 +143,7 @@ export function buildHelpText() {
     'Options:',
     '  --root <path>        Scan this folder for git repositories',
     '  --json               Emit structured JSON instead of text rows',
-    '  --max-depth <n>      Limit scan depth below the root folder',
+    '  --max-depth <n>      Limit scan depth (a non-negative integer)',
     '  --include-nested     Continue scanning inside discovered repositories',
     '  --ignore <a,b,c>     Extra directory basenames to skip',
     '  -h, --help           Show this help',
