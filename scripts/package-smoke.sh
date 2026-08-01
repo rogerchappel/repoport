@@ -15,6 +15,26 @@ cd "$TMP_DIR/app"
 npm init -y >/dev/null
 npm install "$PACKAGE_TGZ" >/dev/null
 
+node --input-type=module <<'EOF'
+import { checkRepoHealth } from 'repoport';
+
+const health = checkRepoHealth({
+  lastCommitDate: new Date(),
+  hasGit: true,
+  remoteUrl: 'git@github.com:octo/alpha.git',
+  isValidGitRepo: true
+});
+
+if (typeof checkRepoHealth !== 'function' || health.broken || health.stale) {
+  throw new Error('The documented package-root health check is not usable');
+}
+EOF
+
+if tar -tzf "$PACKAGE_TGZ" | grep -Eq '(^|/)src/.*\.test\.js$'; then
+  echo 'Packed artifact contains internal test files' >&2
+  exit 1
+fi
+
 npx repoport --help >/dev/null
 mkdir -p "$TMP_DIR/repos/alpha"
 git -C "$TMP_DIR/repos/alpha" init >/dev/null
