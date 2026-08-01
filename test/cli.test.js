@@ -70,6 +70,29 @@ test('buildHelpText documents local-first behavior', () => {
   assert.match(help, /local-first/);
   assert.match(help, /No network calls/);
   assert.match(help, /--max-depth <n>.*non-negative integer/);
+  assert.match(help, /--ignore <a,b,c>.*in addition to defaults/);
+});
+
+test('CLI custom ignores preserve default ignored directories', async () => {
+  const rootPath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-ignore-'));
+
+  try {
+    await makeGitRepo(rootPath, 'visible');
+    await makeGitRepo(path.join(rootPath, 'vendor'), 'vendored');
+    await makeGitRepo(path.join(rootPath, 'node_modules'), 'dependency');
+
+    const { stdout } = await execFileAsync('node', [
+      'src/bin/repoport.js',
+      '--root', rootPath,
+      '--ignore', 'vendor',
+      '--json',
+    ], { cwd: path.resolve(import.meta.dirname, '..') });
+
+    const payload = JSON.parse(stdout);
+    assert.deepEqual(payload.repositories.map((repository) => repository.name), ['visible']);
+  } finally {
+    await fs.rm(rootPath, { recursive: true, force: true });
+  }
 });
 
 test('CLI renders dashboard rows for fixture repos', async () => {

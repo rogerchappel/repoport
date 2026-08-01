@@ -40,14 +40,22 @@ npm run smoke
 node src/bin/repoport.js --root /path/to/projects
 node src/bin/repoport.js --root /path/to/projects --json
 node src/bin/repoport.js --root /path/to/projects --max-depth 2
+node src/bin/repoport.js --root /path/to/projects --ignore vendor,generated
 ```
 
 The CLI is local-first. It reads git metadata from checkouts under `--root`,
 matches GitHub remotes from local URLs, and does not call the GitHub API.
 `--max-depth` accepts only non-negative integers such as `0`, `1`, or `2`.
+`--ignore` adds comma-separated directory basenames to the default ignores
+(`.cache`, `.git`, `.hg`, `.svn`, `coverage`, `dist`, and `node_modules`); it
+does not replace them.
 GitHub remotes must be clone-style HTTPS or SSH URLs with exactly an
 `owner/repository` path; browser page URLs such as `/owner/repository/issues`
 are not treated as repository remotes.
+
+The exported `scanLocalProjects(projectsPath, options)` API follows the same
+rule: `options.ignoreDirectories` is an iterable of extra directory basenames
+to ignore while the defaults remain active.
 
 ## Verify
 

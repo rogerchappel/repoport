@@ -24,7 +24,7 @@ const DEFAULT_IGNORED_DIRECTORIES = new Set([
 /**
  * @typedef {object} ScanLocalProjectsOptions
  * @property {number} [maxDepth=Infinity] Maximum directory depth below root to inspect.
- * @property {Iterable<string>} [ignoreDirectories] Directory basenames to skip.
+ * @property {Iterable<string>} [ignoreDirectories] Extra directory basenames to skip in addition to the defaults.
  * @property {boolean} [includeNestedRepositories=false] Descend into discovered repos to find nested repos.
  */
 
@@ -52,7 +52,10 @@ export async function scanLocalProjects(projectsPath, options = {}) {
     throw new TypeError('maxDepth must be a non-negative number');
   }
 
-  const ignoreDirectories = new Set(options.ignoreDirectories ?? DEFAULT_IGNORED_DIRECTORIES);
+  const ignoreDirectories = new Set([
+    ...DEFAULT_IGNORED_DIRECTORIES,
+    ...(options.ignoreDirectories ?? []),
+  ]);
   const includeNestedRepositories = options.includeNestedRepositories ?? false;
   const repositories = [];
 
