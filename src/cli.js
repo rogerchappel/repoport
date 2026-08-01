@@ -145,7 +145,7 @@ export function buildHelpText() {
     '  --json               Emit structured JSON instead of text rows',
     '  --max-depth <n>      Limit scan depth (a non-negative integer)',
     '  --include-nested     Continue scanning inside discovered repositories',
-    '  --ignore <a,b,c>     Extra directory basenames to skip',
+    '  --ignore <a,b,c>     Skip directories in addition to defaults',
     '  -h, --help           Show this help',
     '  -v, --version        Show version',
     '',
