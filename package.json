@@ -12,6 +12,7 @@
   },
   "files": [
     "src",
+    "!src/**/*.test.js",
     "LICENSE",
     "README.md",
     "SECURITY.md",
