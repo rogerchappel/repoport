@@ -80,6 +80,7 @@ test('scanLocalProjects respects maxDepth and ignored directory options', async 
     await makeRepository(path.join(projectsPath, 'top'));
     await makeRepository(path.join(projectsPath, 'group', 'deep'));
     await makeRepository(path.join(projectsPath, 'vendor', 'ignored'));
+    await makeRepository(path.join(projectsPath, 'node_modules', 'dependency'));
 
     assert.deepEqual(
       (await scanLocalProjects(projectsPath, { maxDepth: 1 })).map((repository) => repository.relativePath),
