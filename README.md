@@ -14,10 +14,10 @@ npm install
 
 ## Use
 
-Import the health helpers from the package source while the package is still pre-release:
+Import the health helpers from the installed package:
 
 ```js
-import { checkRepoHealth } from "./src/scanner/staleDetector.js";
+import { checkRepoHealth } from "repoport";
 
 const health = checkRepoHealth({
   lastCommitDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
