@@ -64,6 +64,9 @@ Next recommended task:
 
 Every contribution should include verification.
 
+Install the committed dependency graph with `npm ci` before running project
+checks. This is the same reproducible installation path used by CI.
+
 Examples:
 
 - Documentation: inspect rendered Markdown or review the diff.
