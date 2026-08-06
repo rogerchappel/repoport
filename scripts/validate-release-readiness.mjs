@@ -1,20 +1,21 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const root = process.cwd();
-const packagePath = path.join(root, 'package.json');
-const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-const scripts = packageJson.scripts ?? {};
-const failures = [];
+export function validateReleaseReadiness(root = process.cwd()) {
+  const packagePath = path.join(root, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+  const scripts = packageJson.scripts ?? {};
+  const failures = [];
 
-function requireField(condition, message) {
-  if (!condition) failures.push(message);
-}
+  function requireField(condition, message) {
+    if (!condition) failures.push(message);
+  }
 
 requireField(packageJson.repository, 'package.json must declare repository metadata');
 requireField(Array.isArray(packageJson.files) && packageJson.files.length > 0, 'package.json must declare a non-empty files allowlist');
 requireField(scripts['package:smoke'], 'package.json scripts must include package:smoke');
 requireField(scripts['release:check'], 'package.json scripts must include release:check');
+requireField(fs.existsSync(path.join(root, 'package-lock.json')), 'repository must include package-lock.json for reproducible installs');
 
 const workflowDir = path.join(root, '.github', 'workflows');
 if (fs.existsSync(workflowDir)) {
@@ -28,8 +29,14 @@ if (fs.existsSync(workflowDir)) {
 
   const combined = workflowFiles.map((file) => fs.readFileSync(path.join(workflowDir, file), 'utf8')).join('\n');
   requireField(/release:check/.test(combined), 'CI workflows must run npm run release:check');
+  requireField(/\bnpm ci\b/.test(combined), 'CI workflows must install dependencies with npm ci');
+  requireField(!/\bnpm install\b/.test(combined), 'CI workflows must not fall back to npm install');
 }
 
+  return failures;
+}
+
+const failures = validateReleaseReadiness();
 if (failures.length > 0) {
   console.error('Release readiness validation failed:');
   for (const failure of failures) console.error(`- ${failure}`);

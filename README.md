@@ -9,8 +9,11 @@ This is an early JavaScript module. The current implementation exposes pure loca
 ## Install
 
 ```sh
-npm install
+npm ci
 ```
+
+Contributors should use `npm ci` so local verification installs the exact
+dependency graph recorded in `package-lock.json`, matching CI.
 
 ## Use
 
@@ -67,8 +70,9 @@ npm run release:check
 ```
 
 `release:readiness` checks repository metadata, packed file declarations,
-package smoke coverage, and workflow placeholder cleanup before the broader
-release check runs.
+package smoke coverage, the committed lockfile and reproducible CI install
+contract, and workflow placeholder cleanup before the broader release check
+runs.
 
 ## Limitations
 

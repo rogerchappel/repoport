@@ -57,11 +57,6 @@ jobs:
             exit 0
           fi
 
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-
+          npm ci
           npm run release:readiness
           npm run release:check
