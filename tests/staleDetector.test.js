@@ -123,6 +123,17 @@ describe('detectBroken', () => {
     });
     assert.strictEqual(result.isBroken, false);
   });
+
+  test('reports unsupported GitHub transports as broken', () => {
+    for (const remoteUrl of [
+      'http://github.com/owner/repo.git',
+      'ftp://github.com/owner/repo.git',
+    ]) {
+      const result = detectBroken({ hasGit: true, remoteUrl, isValidGitRepo: true });
+      assert.strictEqual(result.isBroken, true, remoteUrl);
+      assert.deepEqual(result.reasons, ['remote URL is not a valid GitHub URL'], remoteUrl);
+    }
+  });
 });
 
 describe('checkRepoHealth', () => {

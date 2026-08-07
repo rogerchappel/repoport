@@ -53,6 +53,17 @@ test('matchLocalRepoToGitHubRemote prefers origin over other remotes', () => {
   assert.equal(match.matchedRemote.name, 'origin');
 });
 
+test('matchLocalRepoToGitHubRemote ignores unsupported transports', () => {
+  const index = buildGitHubRepositoryIndex([{ fullName: 'octo/repo' }]);
+  const match = matchLocalRepoToGitHubRemote(
+    { path: '/tmp/repo', remoteUrl: 'ftp://github.com/octo/repo.git' },
+    index,
+  );
+
+  assert.equal(match.githubRepository, null);
+  assert.equal(match.matchedRemote, null);
+});
+
 test('fixture data matches local repositories to GitHub repositories', async () => {
   const [localRepositories, githubRepositories] = await Promise.all([
     fixture('local-repos.json'),
