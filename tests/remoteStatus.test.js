@@ -83,6 +83,26 @@ describe('parseGitHubRemote', () => {
 });
 
 describe('isValidGitHubRemoteUrl', () => {
+  test('uses the documented clone transport contract', () => {
+    for (const remote of [
+      'https://github.com/owner/repo.git',
+      'git@github.com:owner/repo.git',
+      'ssh://git@github.com/owner/repo.git',
+      'git+https://github.com/owner/repo.git',
+    ]) {
+      assert.strictEqual(isValidGitHubRemoteUrl(remote), true, remote);
+    }
+
+    for (const remote of [
+      'http://github.com/owner/repo.git',
+      'ftp://github.com/owner/repo.git',
+      'git://github.com/owner/repo.git',
+    ]) {
+      assert.strictEqual(isValidGitHubRemoteUrl(remote), false, remote);
+      assert.strictEqual(parseGitHubRemote(remote).hasGitHubRemote, false, remote);
+    }
+  });
+
   test('returns true for valid GitHub HTTPS URL', () => {
     assert.strictEqual(isValidGitHubRemoteUrl('https://github.com/owner/repo.git'), true);
   });

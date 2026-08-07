@@ -130,3 +130,26 @@ test('CLI emits JSON payloads', async () => {
     await fs.rm(rootPath, { recursive: true, force: true });
   }
 });
+
+test('CLI excludes repositories reached through unsupported transports', async () => {
+  const rootPath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-transports-'));
+
+  try {
+    await makeGitRepo(rootPath, 'secure', { remoteUrl: 'git+https://github.com/octo/secure.git' });
+    await makeGitRepo(rootPath, 'insecure', { remoteUrl: 'http://github.com/octo/insecure.git' });
+
+    const { stdout } = await execFileAsync('node', ['src/bin/repoport.js', '--root', rootPath, '--json'], {
+      cwd: path.resolve(import.meta.dirname, '..'),
+    });
+
+    const payload = JSON.parse(stdout);
+    const secure = payload.repositories.find((repository) => repository.fullName === 'octo/secure');
+    const insecure = payload.repositories.find((repository) => repository.name === 'insecure');
+    assert.equal(secure.health.isBroken, false);
+    assert.equal(insecure.fullName, 'insecure');
+    assert.equal(insecure.health.isBroken, true);
+    assert.deepEqual(insecure.health.reasons, ['remote URL is not a valid GitHub URL']);
+  } finally {
+    await fs.rm(rootPath, { recursive: true, force: true });
+  }
+});

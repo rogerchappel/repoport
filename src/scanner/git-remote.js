@@ -1,4 +1,6 @@
-const SCP_LIKE_GITHUB_REMOTE = /^(?<protocol>[^@]+@)?(?<host>[^:]+):(?<path>.+)$/;
+import { isScpStyleSshRemote, parseCloneUrl } from '../github/clone-transport.js';
+
+const SCP_LIKE_GITHUB_REMOTE = /^(?:[^@\s/:]+@)?(?<host>[^\s/:]+):(?<path>[^\s]+)$/;
 
 function stripDotGit(value) {
   return value.endsWith('.git') ? value.slice(0, -4) : value;
@@ -25,13 +27,8 @@ function splitOwnerAndName(pathname) {
 }
 
 function fromStandardUrl(remoteUrl) {
-  let url;
-
-  try {
-    url = new URL(remoteUrl);
-  } catch {
-    return null;
-  }
+  const url = parseCloneUrl(remoteUrl);
+  if (!url) return null;
 
   const details = splitOwnerAndName(url.pathname);
 
@@ -48,6 +45,8 @@ function fromStandardUrl(remoteUrl) {
 }
 
 function fromScpLikeUrl(remoteUrl) {
+  if (!isScpStyleSshRemote(remoteUrl)) return null;
+
   const match = remoteUrl.match(SCP_LIKE_GITHUB_REMOTE);
 
   if (!match?.groups?.host || !match.groups.path) {
