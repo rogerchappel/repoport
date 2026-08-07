@@ -5,6 +5,8 @@
  * Broken status is determined by local git metadata only.
  */
 
+import { isScpStyleSshRemote, parseCloneUrl } from './clone-transport.js';
+
 const GITHUB_HOST = 'github.com';
 const OWNER_PATTERN = /^[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i;
 const REPO_PATTERN = /^[a-z\d._-]+$/i;
@@ -29,14 +31,8 @@ function isValidOwnerAndRepo(owner, repo) {
 }
 
 function parseUrlStyleRemote(trimmed) {
-  const candidate = trimmed.replace(/^git\+/, '');
-  let parsed;
-
-  try {
-    parsed = new URL(candidate);
-  } catch {
-    return null;
-  }
+  const parsed = parseCloneUrl(trimmed);
+  if (!parsed) return null;
 
   if (parsed.hostname.toLowerCase() !== GITHUB_HOST) return null;
 
@@ -51,6 +47,8 @@ function parseUrlStyleRemote(trimmed) {
 }
 
 function parseScpStyleRemote(trimmed) {
+  if (!isScpStyleSshRemote(trimmed)) return null;
+
   const match = trimmed.match(/^(?:[^@\s]+@)?github\.com:([^\s/]+)\/([^\s/]+?)\/?$/i);
   if (!match) return null;
 
