@@ -32,7 +32,8 @@ const health = checkRepoHealth({
 console.log(health);
 ```
 
-Use `parseGitHubRemote` from `src/github/remoteStatus.js` when you need to normalize HTTPS or SSH GitHub remotes.
+Use `parseGitHubRemote` from `src/github/remoteStatus.js` when you need to
+normalize supported GitHub clone remotes.
 
 ## CLI
 
@@ -52,9 +53,10 @@ matches GitHub remotes from local URLs, and does not call the GitHub API.
 `--ignore` adds comma-separated directory basenames to the default ignores
 (`.cache`, `.git`, `.hg`, `.svn`, `coverage`, `dist`, and `node_modules`); it
 does not replace them.
-GitHub remotes must be clone-style HTTPS or SSH URLs with exactly an
-`owner/repository` path; browser page URLs such as `/owner/repository/issues`
-are not treated as repository remotes.
+GitHub remotes must use clone-style `https://`, SCP-style SSH,
+`ssh://`, or `git+https://` syntax with exactly an `owner/repository` path.
+Other schemes, including plain `http://`, are rejected. Browser page URLs such
+as `/owner/repository/issues` are not treated as repository remotes.
 
 The exported `scanLocalProjects(projectsPath, options)` API follows the same
 rule: `options.ignoreDirectories` is an iterable of extra directory basenames
