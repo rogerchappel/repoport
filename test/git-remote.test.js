@@ -42,6 +42,30 @@ test('parseGitRemoteUrl supports SSH URLs', () => {
   });
 });
 
+test('remote parsers share the documented clone transport contract', () => {
+  const accepted = [
+    'https://github.com/octo/repo.git',
+    'git@github.com:octo/repo.git',
+    'ssh://git@github.com/octo/repo.git',
+    'git+https://github.com/octo/repo.git',
+  ];
+  const rejected = [
+    'http://github.com/octo/repo.git',
+    'ftp://github.com/octo/repo.git',
+    'git://github.com/octo/repo.git',
+  ];
+
+  for (const remote of accepted) {
+    assert.equal(parseGitRemoteUrl(remote)?.isGitHub, true, remote);
+    assert.equal(parseGitHubRemote(remote)?.fullName, 'octo/repo', remote);
+  }
+
+  for (const remote of rejected) {
+    assert.equal(parseGitRemoteUrl(remote), null, remote);
+    assert.equal(parseGitHubRemote(remote), null, remote);
+  }
+});
+
 test('parseGitHubRemote rejects non-GitHub remotes', () => {
   assert.equal(parseGitHubRemote('git@gitlab.com:octo/repo.git'), null);
   assert.equal(parseGitHubRemote('not a remote'), null);
