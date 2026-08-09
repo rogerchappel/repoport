@@ -43,11 +43,41 @@ test('parseArgs understands root/json/depth/nested options', () => {
   });
 });
 
+test('parseArgs retains equals-separated values', () => {
+  assert.deepEqual(parseArgs(['--root=/tmp/repos', '--max-depth=2', '--ignore=dist,node_modules']), {
+    root: '/tmp/repos',
+    json: false,
+    maxDepth: 2,
+    includeNested: false,
+    help: false,
+    version: false,
+    ignore: ['dist', 'node_modules'],
+  });
+});
+
 test('parseArgs rejects non-canonical max depths', () => {
   for (const value of ['2oops', '2.5', '-1', '', ' 2']) {
     assert.throws(
       () => parseArgs([`--max-depth=${value}`]),
       { message: `Invalid --max-depth value: ${value}. Expected a non-negative integer.` },
+    );
+  }
+});
+
+test('parseArgs rejects absent values for value-taking options', () => {
+  for (const option of ['--root', '--max-depth', '--ignore']) {
+    assert.throws(
+      () => parseArgs([option]),
+      { message: `${option} requires a value` },
+    );
+  }
+});
+
+test('parseArgs does not consume following options as values', () => {
+  for (const option of ['--root', '--max-depth', '--ignore']) {
+    assert.throws(
+      () => parseArgs([option, '--json']),
+      { message: `${option} requires a value` },
     );
   }
 });
@@ -63,6 +93,24 @@ test('CLI reports invalid max depths with a nonzero exit', async () => {
       return true;
     },
   );
+});
+
+test('CLI reports missing option values with a nonzero exit without swallowing --json', async () => {
+  for (const option of ['--root', '--max-depth', '--ignore']) {
+    for (const trailingArguments of [[], ['--json']]) {
+      await assert.rejects(
+        execFileAsync('node', ['src/bin/repoport.js', option, ...trailingArguments], {
+          cwd: path.resolve(import.meta.dirname, '..'),
+        }),
+        (error) => {
+          assert.equal(error.code, 1);
+          assert.equal(error.stdout, '');
+          assert.match(error.stderr, new RegExp(`${option} requires a value`));
+          return true;
+        },
+      );
+    }
+  }
 });
 
 test('buildHelpText documents local-first behavior', () => {
