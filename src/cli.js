@@ -100,7 +100,7 @@ export function parseArgs(argv = []) {
       continue;
     }
     if (argument === '--root') {
-      options.root = argv[index + 1] ?? null;
+      options.root = readOptionValue(argv, index, '--root');
       index += 1;
       continue;
     }
@@ -109,7 +109,7 @@ export function parseArgs(argv = []) {
       continue;
     }
     if (argument === '--max-depth') {
-      options.maxDepth = parseDepth(argv[index + 1]);
+      options.maxDepth = parseDepth(readOptionValue(argv, index, '--max-depth'));
       index += 1;
       continue;
     }
@@ -118,7 +118,7 @@ export function parseArgs(argv = []) {
       continue;
     }
     if (argument === '--ignore') {
-      options.ignore = parseIgnore(argv[index + 1]);
+      options.ignore = parseIgnore(readOptionValue(argv, index, '--ignore'));
       index += 1;
       continue;
     }
@@ -131,6 +131,14 @@ export function parseArgs(argv = []) {
   }
 
   return options;
+}
+
+function readOptionValue(argv, index, optionName) {
+  const value = argv[index + 1];
+  if (value === undefined || value.startsWith('-')) {
+    throw new Error(`${optionName} requires a value`);
+  }
+  return value;
 }
 
 export function buildHelpText() {
