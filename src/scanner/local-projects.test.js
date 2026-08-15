@@ -94,11 +94,20 @@ test('scanLocalProjects respects maxDepth and ignored directory options', async 
   });
 });
 
-test('scanLocalProjects returns an empty list for a missing projects folder', async () => {
+test('scanLocalProjects rejects a missing projects folder', async () => {
   await withFixture(async (projectsPath) => {
     const missingPath = path.join(projectsPath, 'does-not-exist');
 
-    assert.deepEqual(await scanLocalProjects(missingPath), []);
+    await assert.rejects(
+      () => scanLocalProjects(missingPath),
+      (error) => error?.code === 'ENOENT' && error?.path === missingPath,
+    );
+  });
+});
+
+test('scanLocalProjects returns an empty list for an existing empty projects folder', async () => {
+  await withFixture(async (projectsPath) => {
+    assert.deepEqual(await scanLocalProjects(projectsPath), []);
   });
 });
 
