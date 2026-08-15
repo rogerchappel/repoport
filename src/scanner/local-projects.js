@@ -33,8 +33,9 @@ const DEFAULT_IGNORED_DIRECTORIES = new Set([
  *
  * A repository is any directory containing a `.git` directory or a `.git` file
  * (for worktrees and submodules). Results are deterministic and sorted by
- * relative path. Missing roots return an empty list; other filesystem errors are
- * surfaced so callers can show actionable failures.
+ * relative path. Missing roots and other filesystem errors are surfaced so
+ * callers can show actionable failures. Existing empty roots return an empty
+ * list.
  *
  * @param {string} projectsPath Local projects folder to scan.
  * @param {ScanLocalProjectsOptions} [options]
@@ -59,15 +60,7 @@ export async function scanLocalProjects(projectsPath, options = {}) {
   const includeNestedRepositories = options.includeNestedRepositories ?? false;
   const repositories = [];
 
-  let rootStats;
-  try {
-    rootStats = await fs.stat(rootPath);
-  } catch (error) {
-    if (error?.code === 'ENOENT') {
-      return [];
-    }
-    throw error;
-  }
+  const rootStats = await fs.stat(rootPath);
 
   if (!rootStats.isDirectory()) {
     throw new TypeError(`projectsPath must be a directory: ${projectsPath}`);
