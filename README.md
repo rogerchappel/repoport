@@ -49,6 +49,9 @@ node src/bin/repoport.js --root /path/to/projects --ignore vendor,generated
 
 The CLI is local-first. It reads git metadata from checkouts under `--root`,
 matches GitHub remotes from local URLs, and does not call the GitHub API.
+A `--root` path (or `REPOPORT_ROOT` path) that does not exist is treated as an
+error and exits nonzero in both text and JSON modes. An existing directory with
+no Git repositories is valid and produces an empty result.
 `--max-depth` accepts only non-negative integers such as `0`, `1`, or `2`.
 `--ignore` adds comma-separated directory basenames to the default ignores
 (`.cache`, `.git`, `.hg`, `.svn`, `coverage`, `dist`, and `node_modules`); it
@@ -59,7 +62,9 @@ Other schemes, including plain `http://`, are rejected. Browser page URLs such
 as `/owner/repository/issues` are not treated as repository remotes.
 
 The exported `scanLocalProjects(projectsPath, options)` API follows the same
-rule: `options.ignoreDirectories` is an iterable of extra directory basenames
+root semantics: a missing path rejects with the filesystem error, while an
+existing empty directory resolves to an empty array. The
+`options.ignoreDirectories` value is an iterable of extra directory basenames
 to ignore while the defaults remain active.
 
 ## Verify

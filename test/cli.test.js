@@ -113,6 +113,53 @@ test('CLI reports missing option values with a nonzero exit without swallowing -
   }
 });
 
+test('CLI reports a missing root with a nonzero exit in text and JSON modes', async () => {
+  const fixturePath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-missing-root-'));
+  const missingPath = path.join(fixturePath, 'does-not-exist');
+
+  try {
+    for (const rootArguments of [['--root', missingPath], []]) {
+      for (const outputArguments of [[], ['--json']]) {
+        await assert.rejects(
+          execFileAsync('node', ['src/bin/repoport.js', ...rootArguments, ...outputArguments], {
+            cwd: path.resolve(import.meta.dirname, '..'),
+            env: { ...process.env, REPOPORT_ROOT: missingPath },
+          }),
+          (error) => {
+            assert.equal(error.code, 1);
+            assert.equal(error.stdout, '');
+            assert.match(error.stderr, /ENOENT/);
+            assert.match(error.stderr, new RegExp(missingPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+            return true;
+          },
+        );
+      }
+    }
+  } finally {
+    await fs.rm(fixturePath, { recursive: true, force: true });
+  }
+});
+
+test('CLI succeeds with an empty result for an existing empty root', async () => {
+  const rootPath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-empty-root-'));
+
+  try {
+    const textResult = await execFileAsync('node', ['src/bin/repoport.js', '--root', rootPath], {
+      cwd: path.resolve(import.meta.dirname, '..'),
+    });
+    assert.match(textResult.stdout, /No git repositories found under/);
+    assert.equal(textResult.stderr, '');
+
+    const jsonResult = await execFileAsync('node', ['src/bin/repoport.js', '--root', rootPath, '--json'], {
+      cwd: path.resolve(import.meta.dirname, '..'),
+    });
+    assert.deepEqual(JSON.parse(jsonResult.stdout).repositories, []);
+    assert.equal(jsonResult.stderr, '');
+  } finally {
+    await fs.rm(rootPath, { recursive: true, force: true });
+  }
+});
+
 test('buildHelpText documents local-first behavior', () => {
   const help = buildHelpText();
   assert.match(help, /local-first/);
