@@ -34,6 +34,50 @@ test('parsePullRequestStatus extracts open PR counts from GitHub-like payloads',
   );
 });
 
+test('dashboard count helpers accept only non-negative integers and canonical integer strings', () => {
+  const validCounts = [
+    [0, 0],
+    [3, 3],
+    ['0', 0],
+    ['12', 12],
+  ];
+
+  for (const [input, expected] of validCounts) {
+    assert.equal(parsePullRequestStatus({ openPullRequests: input }).openCount, expected);
+    assert.equal(parseAheadBehindStatus({ ahead: input }).ahead, expected);
+    assert.equal(parseAheadBehindStatus({ behind: input }).behind, expected);
+  }
+
+  const invalidCounts = [
+    -1,
+    1.5,
+    '',
+    ' ',
+    '-1',
+    '1.5',
+    '2abc',
+    '02',
+    '+2',
+    'false',
+    true,
+    false,
+  ];
+
+  for (const input of invalidCounts) {
+    assert.equal(parsePullRequestStatus({ openPullRequests: input }).openCount, 0);
+    assert.equal(parseAheadBehindStatus({ ahead: input }).ahead, 0);
+    assert.equal(parseAheadBehindStatus({ behind: input }).behind, 0);
+  }
+});
+
+test('parseWorkingTreeStatus accepts only boolean dirty values', () => {
+  for (const input of [false, 'false', 'true', '', 0, 1, null]) {
+    assert.equal(parseWorkingTreeStatus({ isDirty: input }).isDirty, false);
+  }
+
+  assert.equal(parseWorkingTreeStatus({ isDirty: true }).isDirty, true);
+});
+
 test('parseCiStatus normalizes several CI states', () => {
   assert.deepEqual(
     parseCiStatus({ defaultBranchRef: { target: { statusCheckRollup: { state: 'SUCCESS' } } } }),
