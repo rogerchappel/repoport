@@ -43,6 +43,23 @@ function remotePriority(remoteName) {
   return 2;
 }
 
+function normalizeIdentity(owner, name) {
+  if (
+    typeof owner !== 'string'
+    || typeof name !== 'string'
+    || !owner
+    || !name
+    || owner.trim() !== owner
+    || name.trim() !== name
+    || owner.includes('/')
+    || name.includes('/')
+  ) {
+    return null;
+  }
+
+  return { owner, name };
+}
+
 export function normalizeGitHubRepository(repo) {
   const candidates = [
     repo?.fullName,
@@ -52,8 +69,12 @@ export function normalizeGitHubRepository(repo) {
   ];
 
   for (const candidate of candidates) {
-    if (typeof candidate === 'string' && candidate.includes('/')) {
-      const [owner, name] = candidate.split('/');
+    if (typeof candidate === 'string') {
+      const identity = normalizeIdentity(...candidate.split('/'));
+      if (!identity || candidate.split('/').length !== 2) {
+        continue;
+      }
+      const { owner, name } = identity;
       return {
         ...repo,
         owner,
@@ -64,11 +85,15 @@ export function normalizeGitHubRepository(repo) {
     }
   }
 
-  if (repo?.owner && repo?.name) {
+  const identity = normalizeIdentity(repo?.owner, repo?.name);
+  if (identity) {
+    const { owner, name } = identity;
     return {
       ...repo,
-      fullName: `${repo.owner}/${repo.name}`,
-      canonical: `${repo.owner}/${repo.name}`.toLowerCase(),
+      owner,
+      name,
+      fullName: `${owner}/${name}`,
+      canonical: `${owner}/${name}`.toLowerCase(),
     };
   }
 
