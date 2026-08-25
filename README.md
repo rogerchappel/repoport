@@ -52,7 +52,9 @@ matches GitHub remotes from local URLs, and does not call the GitHub API.
 A `--root` path (or `REPOPORT_ROOT` path) that does not exist is treated as an
 error and exits nonzero in both text and JSON modes. An existing directory with
 no Git repositories is valid and produces an empty result.
-`--max-depth` accepts only non-negative integers such as `0`, `1`, or `2`.
+`--max-depth` accepts only finite, non-negative safe integers, from `0` through
+`9007199254740991`. Larger decimal values are rejected instead of being rounded
+or converted to infinity.
 `--ignore` adds comma-separated directory basenames to the default ignores
 (`.cache`, `.git`, `.hg`, `.svn`, `coverage`, `dist`, and `node_modules`); it
 does not replace them.
@@ -66,6 +68,13 @@ root semantics: a missing path rejects with the filesystem error, while an
 existing empty directory resolves to an empty array. The
 `options.ignoreDirectories` value is an iterable of extra directory basenames
 to ignore while the defaults remain active.
+
+The exported `normalizeGitHubRepository(repository)` API accepts repository
+identity fields (`fullName`, `nameWithOwner`, `repository`, or `path`) only in
+the exact non-empty `owner/repository` form. Missing, empty, whitespace-padded,
+or additional path segments return `null` unless another supported field or
+clone URL supplies a valid identity. Separate `owner` and `name` fields follow
+the same non-empty, unpadded, slash-free contract.
 
 ### Dashboard status inputs
 
