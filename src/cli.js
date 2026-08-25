@@ -170,7 +170,11 @@ function parseDepth(value) {
   if (!/^(0|[1-9]\d*)$/.test(value)) {
     throw new Error(`Invalid --max-depth value: ${value}. Expected a non-negative integer.`);
   }
-  return Number(value);
+  const depth = Number(value);
+  if (!Number.isSafeInteger(depth)) {
+    throw new Error(`Invalid --max-depth value: ${value}. Expected a non-negative safe integer.`);
+  }
+  return depth;
 }
 
 function parseIgnore(value) {
