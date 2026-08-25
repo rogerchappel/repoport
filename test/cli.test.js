@@ -64,6 +64,23 @@ test('parseArgs rejects non-canonical max depths', () => {
   }
 });
 
+test('parseArgs accepts only safe integer max depths', () => {
+  assert.equal(
+    parseArgs([`--max-depth=${Number.MAX_SAFE_INTEGER}`]).maxDepth,
+    Number.MAX_SAFE_INTEGER,
+  );
+
+  for (const value of [
+    `${Number.MAX_SAFE_INTEGER + 1}`,
+    '9999999999999999999999999999999999999999',
+  ]) {
+    assert.throws(
+      () => parseArgs([`--max-depth=${value}`]),
+      { message: `Invalid --max-depth value: ${value}. Expected a non-negative safe integer.` },
+    );
+  }
+});
+
 test('parseArgs rejects absent values for value-taking options', () => {
   for (const option of ['--root', '--max-depth', '--ignore']) {
     assert.throws(
