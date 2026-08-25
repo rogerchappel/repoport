@@ -1,11 +1,11 @@
 function normalizeCount(value) {
-  if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
+  if (typeof value === 'number' && Number.isSafeInteger(value) && value >= 0) {
     return value;
   }
 
-  if (typeof value === 'string' && value.trim() !== '') {
-    const parsed = Number.parseInt(value, 10);
-    return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+  if (typeof value === 'string' && /^(0|[1-9]\d*)$/.test(value)) {
+    const parsed = Number(value);
+    return Number.isSafeInteger(parsed) ? parsed : null;
   }
 
   return null;
@@ -77,13 +77,13 @@ export function parseCiStatus(repository = {}) {
 }
 
 export function parseWorkingTreeStatus(localRepo = {}) {
-  const dirty = Boolean(firstDefined(
+  const dirty = firstDefined(
     localRepo?.status?.dirty,
     localRepo?.workingTree?.dirty,
     localRepo?.gitStatus?.isDirty,
     localRepo?.git?.dirty,
     localRepo?.isDirty,
-  ));
+  ) === true;
 
   return {
     isDirty: dirty,
