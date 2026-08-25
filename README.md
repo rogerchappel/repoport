@@ -67,6 +67,16 @@ existing empty directory resolves to an empty array. The
 `options.ignoreDirectories` value is an iterable of extra directory basenames
 to ignore while the defaults remain active.
 
+### Dashboard status inputs
+
+The public `parsePullRequestStatus` and `parseAheadBehindStatus` helpers accept
+counts as non-negative safe integers or canonical decimal strings (`"0"`,
+`"1"`, `"12"`). Signed, padded, fractional, empty, boolean, or mixed-content
+values are treated as unavailable and fall back to zero. The public
+`parseWorkingTreeStatus` helper considers a repository dirty only when the
+selected `dirty`/`isDirty` field is the boolean `true`; strings such as
+`"true"` and `"false"` are not boolean status values and fall back to clean.
+
 ## Verify
 
 ```sh
