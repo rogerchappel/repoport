@@ -22,6 +22,29 @@ test('normalizeGitHubRepository understands several GitHub payload shapes', () =
   );
 });
 
+test('normalizeGitHubRepository rejects malformed repository identities', () => {
+  for (const identity of [
+    'repo',
+    '/repo',
+    'owner/',
+    'owner//repo',
+    'owner/repo/issues',
+    ' owner/repo',
+    'owner/repo ',
+  ]) {
+    assert.equal(normalizeGitHubRepository({ fullName: identity }), null, identity);
+  }
+
+  for (const repository of [
+    { owner: '', name: 'repo' },
+    { owner: 'owner', name: '' },
+    { owner: 'owner/team', name: 'repo' },
+    { owner: 'owner', name: 'repo/issues' },
+  ]) {
+    assert.equal(normalizeGitHubRepository(repository), null);
+  }
+});
+
 test('buildGitHubRepositoryIndex indexes repositories by owner/name', () => {
   const index = buildGitHubRepositoryIndex([
     { fullName: 'octo/repo' },
