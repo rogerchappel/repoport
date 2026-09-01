@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
 import { execFile as execFileCallback } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -9,6 +10,7 @@ import { buildDashboardStatusesFromMatches, renderRepositoryDashboard } from './
 import { parseGitHubRemote } from './scanner/git-remote.js';
 
 const execFile = promisify(execFileCallback);
+const packageVersion = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 
 export async function runCli(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
@@ -19,7 +21,7 @@ export async function runCli(argv = process.argv.slice(2)) {
   }
 
   if (options.version) {
-    process.stdout.write('repoport v0.1.0\n');
+    process.stdout.write(`repoport v${packageVersion}\n`);
     return { code: 0, output: 'version' };
   }
 

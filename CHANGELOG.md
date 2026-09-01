@@ -11,6 +11,12 @@ format and uses semantic versioning when versioned releases are published.
 
 - Initial project setup.
 
+### Changed
+
+- The `repoport --version` output now reads the version from `package.json`,
+  which is the single version source verified in both source and packed-package
+  release checks.
+
 ## Release Links
 
 - Unreleased:

@@ -9,6 +9,7 @@ import { promisify } from 'node:util';
 import { parseArgs, buildHelpText } from '../src/cli.js';
 
 const execFileAsync = promisify(execFile);
+const projectRoot = path.resolve(import.meta.dirname, '..');
 
 async function makeGitRepo(rootPath, name, { remoteUrl, dirty = false } = {}) {
   const repoPath = path.join(rootPath, name);
@@ -110,6 +111,26 @@ test('CLI reports invalid max depths with a nonzero exit', async () => {
       return true;
     },
   );
+});
+
+test('CLI version matches package metadata', async () => {
+  const fixturePath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-version-'));
+
+  try {
+    const packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'));
+    packageJson.version = '9.8.7';
+    await fs.writeFile(path.join(fixturePath, 'package.json'), JSON.stringify(packageJson));
+    await fs.cp(path.join(projectRoot, 'src'), path.join(fixturePath, 'src'), { recursive: true });
+
+    const { stdout, stderr } = await execFileAsync('node', ['src/bin/repoport.js', '--version'], {
+      cwd: fixturePath,
+    });
+
+    assert.equal(stdout, 'repoport v9.8.7\n');
+    assert.equal(stderr, '');
+  } finally {
+    await fs.rm(fixturePath, { recursive: true, force: true });
+  }
 });
 
 test('CLI reports missing option values with a nonzero exit without swallowing --json', async () => {
