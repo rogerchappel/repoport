@@ -77,15 +77,30 @@ export function parseCiStatus(repository = {}) {
 }
 
 export function parseWorkingTreeStatus(localRepo = {}) {
-  const dirty = firstDefined(
+  const dirtyCandidates = [
     localRepo?.status?.dirty,
     localRepo?.workingTree?.dirty,
     localRepo?.gitStatus?.isDirty,
     localRepo?.git?.dirty,
     localRepo?.isDirty,
-  ) === true;
+  ];
+  const rawDirty = firstDefined(...dirtyCandidates);
+  const available = localRepo?.status?.available !== false
+    && dirtyCandidates.some((value) => value !== undefined);
+
+  if (!available) {
+    return {
+      available: false,
+      isDirty: null,
+      label: 'Git status unavailable',
+      tone: 'neutral',
+    };
+  }
+
+  const dirty = rawDirty === true;
 
   return {
+    available: true,
     isDirty: dirty,
     label: dirty ? 'Dirty' : 'Clean',
     tone: dirty ? 'attention' : 'positive',
@@ -93,21 +108,39 @@ export function parseWorkingTreeStatus(localRepo = {}) {
 }
 
 export function parseAheadBehindStatus(localRepo = {}) {
-  const ahead = normalizeCount(firstDefined(
+  const aheadCandidates = [
     localRepo?.status?.ahead,
     localRepo?.gitStatus?.ahead,
     localRepo?.branch?.ahead,
     localRepo?.git?.ahead,
     localRepo?.ahead,
-  )) ?? 0;
+  ];
+  const rawAhead = firstDefined(...aheadCandidates);
 
-  const behind = normalizeCount(firstDefined(
+  const behindCandidates = [
     localRepo?.status?.behind,
     localRepo?.gitStatus?.behind,
     localRepo?.branch?.behind,
     localRepo?.git?.behind,
     localRepo?.behind,
-  )) ?? 0;
+  ];
+  const rawBehind = firstDefined(...behindCandidates);
+  const available = localRepo?.status?.available !== false
+    && [...aheadCandidates, ...behindCandidates].some((value) => value !== undefined);
+
+  if (!available) {
+    return {
+      available: false,
+      ahead: null,
+      behind: null,
+      sync: 'UNKNOWN',
+      label: 'Sync unavailable',
+      tone: 'neutral',
+    };
+  }
+
+  const ahead = normalizeCount(rawAhead) ?? 0;
+  const behind = normalizeCount(rawBehind) ?? 0;
 
   let sync = 'UP_TO_DATE';
   if (ahead > 0 && behind > 0) {
@@ -119,6 +152,7 @@ export function parseAheadBehindStatus(localRepo = {}) {
   }
 
   return {
+    available: true,
     ahead,
     behind,
     sync,

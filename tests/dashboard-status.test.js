@@ -111,6 +111,7 @@ test('parseWorkingTreeStatus and parseAheadBehindStatus reflect local git state'
   assert.deepEqual(
     parseWorkingTreeStatus({ gitStatus: { isDirty: true } }),
     {
+      available: true,
       isDirty: true,
       label: 'Dirty',
       tone: 'attention',
@@ -120,6 +121,7 @@ test('parseWorkingTreeStatus and parseAheadBehindStatus reflect local git state'
   assert.deepEqual(
     parseAheadBehindStatus({ branch: { ahead: 2, behind: 1 } }),
     {
+      available: true,
       ahead: 2,
       behind: 1,
       sync: 'DIVERGED',
