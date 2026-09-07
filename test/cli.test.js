@@ -264,6 +264,60 @@ test('CLI emits JSON payloads', async () => {
   }
 });
 
+test('CLI reports Git status as unavailable for an invalid gitfile', async () => {
+  const rootPath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-invalid-gitfile-'));
+  const repoPath = path.join(rootPath, 'broken');
+
+  try {
+    await fs.mkdir(repoPath);
+    await fs.writeFile(path.join(repoPath, '.git'), 'gitdir: /definitely/missing\n');
+
+    const { stdout } = await execFileAsync('node', ['src/bin/repoport.js', '--root', rootPath, '--json'], {
+      cwd: projectRoot,
+    });
+    const [repository] = JSON.parse(stdout).repositories;
+
+    assert.equal(repository.health.isBroken, true);
+    assert.deepEqual(repository.dirty, {
+      available: false,
+      isDirty: null,
+      label: 'Git status unavailable',
+      tone: 'neutral',
+    });
+    assert.deepEqual(repository.aheadBehind, {
+      available: false,
+      ahead: null,
+      behind: null,
+      sync: 'UNKNOWN',
+      label: 'Sync unavailable',
+      tone: 'neutral',
+    });
+  } finally {
+    await fs.rm(rootPath, { recursive: true, force: true });
+  }
+});
+
+test('CLI does not claim clean or synchronized state when Git commands fail', async () => {
+  const rootPath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-git-failure-'));
+  const binPath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-bin-'));
+
+  try {
+    await makeGitRepo(rootPath, 'unreadable');
+    await fs.writeFile(path.join(binPath, 'git'), '#!/bin/sh\nexit 70\n', { mode: 0o755 });
+
+    const { stdout } = await execFileAsync(process.execPath, ['src/bin/repoport.js', '--root', rootPath], {
+      cwd: projectRoot,
+      env: { ...process.env, PATH: `${binPath}:${process.env.PATH}` },
+    });
+
+    assert.match(stdout, /\[Git status unavailable\] \[Sync unavailable\] \[BROKEN\]/);
+    assert.doesNotMatch(stdout, /\[Clean\]|\[Up to date\]/);
+  } finally {
+    await fs.rm(rootPath, { recursive: true, force: true });
+    await fs.rm(binPath, { recursive: true, force: true });
+  }
+});
+
 test('CLI excludes repositories reached through unsupported transports', async () => {
   const rootPath = await fs.mkdtemp(path.join(os.tmpdir(), 'repoport-cli-transports-'));
 

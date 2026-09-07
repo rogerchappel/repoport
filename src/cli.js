@@ -225,8 +225,8 @@ async function getGitRemotes(repositoryPath) {
 
 async function getGitStatus(repositoryPath) {
   const output = await git(repositoryPath, ['status', '--porcelain=2', '--branch'], { allowFailure: true });
-  if (!output) {
-    return { dirty: false, ahead: 0, behind: 0 };
+  if (output === null) {
+    return { available: false, dirty: null, ahead: null, behind: null };
   }
   const lines = output.split('\n');
   const branchLine = lines.find((line) => line.startsWith('# branch.ab '));
@@ -240,7 +240,7 @@ async function getGitStatus(repositoryPath) {
     }
   }
   const dirty = lines.some((line) => line && !line.startsWith('#'));
-  return { dirty, ahead, behind };
+  return { available: true, dirty, ahead, behind };
 }
 
 async function getLastCommitDate(repositoryPath) {

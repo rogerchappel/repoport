@@ -85,6 +85,11 @@ values are treated as unavailable and fall back to zero. The public
 `parseWorkingTreeStatus` helper considers a repository dirty only when the
 selected `dirty`/`isDirty` field is the boolean `true`; strings such as
 `"true"` and `"false"` are not boolean status values and fall back to clean.
+When the CLI cannot run `git status`, its text dashboard uses the neutral
+`Git status unavailable` and `Sync unavailable` badges instead of claiming the
+checkout is clean or up to date. JSON rows expose `available: false`, `null`
+dirty/ahead/behind values, and an `UNKNOWN` sync state. The existing `BROKEN`
+health badge and diagnostic reasons remain alongside those unavailable badges.
 
 ## Verify
 

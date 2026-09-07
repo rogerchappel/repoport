@@ -111,6 +111,7 @@ test('parseWorkingTreeStatus and parseAheadBehindStatus reflect local git state'
   assert.deepEqual(
     parseWorkingTreeStatus({ gitStatus: { isDirty: true } }),
     {
+      available: true,
       isDirty: true,
       label: 'Dirty',
       tone: 'attention',
@@ -120,6 +121,7 @@ test('parseWorkingTreeStatus and parseAheadBehindStatus reflect local git state'
   assert.deepEqual(
     parseAheadBehindStatus({ branch: { ahead: 2, behind: 1 } }),
     {
+      available: true,
       ahead: 2,
       behind: 1,
       sync: 'DIVERGED',
@@ -131,13 +133,30 @@ test('parseWorkingTreeStatus and parseAheadBehindStatus reflect local git state'
   assert.deepEqual(
     parseAheadBehindStatus({}),
     {
-      ahead: 0,
-      behind: 0,
-      sync: 'UP_TO_DATE',
-      label: 'Up to date',
-      tone: 'positive',
+      available: false,
+      ahead: null,
+      behind: null,
+      sync: 'UNKNOWN',
+      label: 'Sync unavailable',
+      tone: 'neutral',
     },
   );
+
+  assert.deepEqual(parseWorkingTreeStatus({ status: { available: false } }), {
+    available: false,
+    isDirty: null,
+    label: 'Git status unavailable',
+    tone: 'neutral',
+  });
+
+  assert.deepEqual(parseAheadBehindStatus({ status: { available: false } }), {
+    available: false,
+    ahead: null,
+    behind: null,
+    sync: 'UNKNOWN',
+    label: 'Sync unavailable',
+    tone: 'neutral',
+  });
 });
 
 test('buildRepositoryDashboardStatus composes local, GitHub, and health data', () => {
